@@ -11,13 +11,12 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 
 public class MainActivity extends AppCompatActivity {
     Spinner startSpinner, endSpinner;
     TextView resultText;
 
-    ArrayList<String> line1 = new ArrayList(Arrays.asList(
+    ArrayList<String> line1 = new ArrayList<>(Arrays.asList(
             "helwan", "ain helwan", "helwan university", "wadi hof", "hadayek helwan",
             "el-maasara", "tora el-asmant", "kozzika", "tora el-balad", "sakanat el-maadi", "el-maadi",
             "hadayek el-maadi", "dar el-salam", "el-zahraa", "mar girgis", "el-malek el-saleh",
@@ -26,13 +25,13 @@ public class MainActivity extends AppCompatActivity {
             "saray el-qobba", "hadayek el-zaitoun", "helmeyet el-zaitoun", "el-matareyya",
             "ain shams", "ezbet el-nakhl", "el-marg", "new el-marg"
     ));
-    ArrayList<String> line2 = new ArrayList(Arrays.asList(
+    ArrayList<String> line2 = new ArrayList<>(Arrays.asList(
             "el mounib", "sakiat mekki", "omm el misryeen", "giza", "faisal",
             "cairo university", "bohooth", "dokki", "opera", "sadat", "naguib",
             "ataba", "al shohadaa", "massara", "road el-farag", "sainte teresa",
             "khalafawy", "mezallat", "koliet el-zeraa", "shobra el kheima"
     ));
-    ArrayList<String> line3 = new ArrayList(Arrays.asList(
+    ArrayList<String> line3 = new ArrayList<>(Arrays.asList(
             "adly mansour", "hikestep", "omar ibn al khattab", "kebaa", "hisham barakat",
             "el nozha", "el shames club", "alf maskan", "heliopolis", "haroun",
             "al ahram", "koleyet el banat", "cairo stadium", "fair zone", "abbassiya",
@@ -41,7 +40,7 @@ public class MainActivity extends AppCompatActivity {
             "el bohy", "el qawmia", "ring road", "rod el farag corr"
     ));
 
-    ArrayList<String> line3new = new ArrayList(Arrays.asList(
+    ArrayList<String> line3new = new ArrayList<>(Arrays.asList(
             "tawfikia", "wadi el nile", "gamet el dowel", "boulak el dakrour",
             "cairo university"
     ));
@@ -64,11 +63,11 @@ public class MainActivity extends AppCompatActivity {
         items.addAll(line3new);
 
         //items->adapter->spinner
-        ArrayAdapter startAdapter = new ArrayAdapter(this
+        ArrayAdapter startAdapter = new ArrayAdapter<>(this
                 , android.R.layout.simple_list_item_1, items);
         startSpinner.setAdapter(startAdapter);
 
-        ArrayAdapter endAdapter = new ArrayAdapter(this
+        ArrayAdapter endAdapter = new ArrayAdapter<>(this
                 , android.R.layout.simple_list_item_1, items);
         endSpinner.setAdapter(endAdapter);
 
