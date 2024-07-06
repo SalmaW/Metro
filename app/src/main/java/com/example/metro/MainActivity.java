@@ -83,6 +83,10 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(this, "please select station", Toast.LENGTH_SHORT).show();
             return;
         }
+        if(end.equalsIgnoreCase(start)){
+            Toast.makeText(this, "please select end station", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
         Intent a = new Intent(this, MetroLine.class);
         a.putExtra("startStation",start);
