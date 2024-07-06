@@ -1,3 +1,118 @@
 <resources>
-    <string name="app_name">Metro</string>
+<string name="app_name">Metro</string>
+<string name="choose_start_station">Choose Start Station</string>
+<string name="choose_end_station">Choose End Station</string>
+
+<!-- Array of station names for Line 1 -->
+<string-array name="line1_stations">
+    <item>helwan</item>
+    <item>ain helwan</item>
+    <item>helwan university</item>
+    <item>wadi hof</item>
+    <item>hadayek helwan</item>
+    <item>el-maasara</item>
+    <item>tora el-asmant</item>
+    <item>kozzika</item>
+    <item>tora el-balad</item>
+    <item>sakanat el-maadi</item>
+    <item>el-maadi</item>
+    <item>hadayeq el-maadi</item>
+    <item>dar el-salam</item>
+    <item>el-zahraa</item>
+    <item>mar girgis</item>
+    <item>el-malek el-saleh</item>
+    <item>al-sayeda zeinab</item>
+    <item>saad zaghloul</item>
+    <item>sadat</item>
+    <item>nasser</item>
+    <item>orabi</item>
+    <item>al shohadaa</item>
+    <item>ghamra</item>
+    <item>el-demerdash</item>
+    <item>manshiet el-sadr</item>
+    <item>kobri el-qobba</item>
+    <item>hammamat el-qobba</item>
+    <item>saray el-qobba</item>
+    <item>hadayeq el-zaitoun</item>
+    <item>helmeyet el-zaitoun</item>
+    <item>el-matareyya</item>
+    <item>ain shams</item>
+    <item>ezbet el-nakhl</item>
+    <item>el-marg</item>
+    <item>new el-marg</item>
+</string-array>
+
+<!-- Array of station names for Line 2 -->
+<string-array name="line2_stations">
+    <item>el mounib</item>
+    <item>sakiat mekki</item>
+    <item>omm el misryeen</item>
+    <item>giza</item>
+    <item>faisal</item>
+    <item>cairo university</item>
+    <item>bohooth</item>
+    <item>dokki</item>
+    <item>opera</item>
+    <item>sadat</item>
+    <item>naguib</item>
+    <item>ataba</item>
+    <item>al shohadaa</item>
+    <item>massara</item>
+    <item>road el-farag</item>
+    <item>sainte teresa</item>
+    <item>khalafawy</item>
+    <item>mezallat</item>
+    <item>koliet el-zeraa</item>
+    <item>shobra el kheima</item>
+</string-array>
+
+<!-- Array of station names for Line 3 -->
+<string-array name="line3_stations">
+    <item>adly mansour</item>
+    <item>hikestep</item>
+    <item>omar ibn al khattab</item>
+    <item>kebaa</item>
+    <item>hisham barakat</item>
+    <item>el nozha</item>
+    <item>el shames club</item>
+    <item>alf maskan</item>
+    <item>heliopolis</item>
+    <item>haroun</item>
+    <item>al ahram</item>
+    <item>koleyet el banat</item>
+    <item>cairo stadium</item>
+    <item>fair zone</item>
+    <item>abbassiya</item>
+    <item>abdou pasha</item>
+    <item>el geish</item>
+    <item>bab el shaaria</item>
+    <item>ataba</item>
+    <item>nasser</item>
+    <item>maspero</item>
+    <item>zamalek</item>
+    <item>kit kat</item>
+    <item>sudan st.</item>
+    <item>imbaba</item>
+    <item>el bohy</item>
+    <item>el qawmia</item>
+    <item>ring road</item>
+    <item>rod el farag corr</item>
+</string-array>
+
+<!-- Additional stations for Line 3 new extension -->
+<string-array name="line3new_stations">
+    <item>tawfikia</item>
+    <item>wadi el nile</item>
+    <item>gamet el dowel</item>
+    <item>boulak el dakrour</item>
+    <item>cairo university</item>
+</string-array>
+
+<!-- Combined array of all station names -->
+<string-array name="station_names">
+    <item>@array/line1_stations</item>
+    <item>@array/line2_stations</item>
+    <item>@array/line3_stations</item>
+    <item>@array/line3new_stations</item>
+</string-array>
 </resources>

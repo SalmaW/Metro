@@ -1,130 +1,123 @@
+// MainActivity.java
 package com.example.metro;
 
-import androidx.appcompat.app.AppCompatActivity;
+import static com.example.metro.MetroAppFinal.allStations;
+import static com.example.metro.MetroAppFinal.line1;
+import static com.example.metro.MetroAppFinal.line2;
+import static com.example.metro.MetroAppFinal.line3;
+import static com.example.metro.MetroAppFinal.line3new;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
+import androidx.appcompat.app.AppCompatActivity;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public class MainActivity extends AppCompatActivity {
-    Spinner startSpinner, endSpinner;
-    TextView resultText;
 
-    ArrayList<String> line1 = new ArrayList<>(Arrays.asList(
-            "helwan", "ain helwan", "helwan university", "wadi hof", "hadayek helwan",
-            "el-maasara", "tora el-asmant", "kozzika", "tora el-balad", "sakanat el-maadi", "el-maadi",
-            "hadayek el-maadi", "dar el-salam", "el-zahraa", "mar girgis", "el-malek el-saleh",
-            "al-sayeda zeinab", "saad zaghloul", "sadat", "nasser", "orabi", "al shohadaa",
-            "ghamra", "el-demerdash", "manshiet el-sadr", "kobri el-qobba", "hammamat el-qobba",
-            "saray el-qobba", "hadayek el-zaitoun", "helmeyet el-zaitoun", "el-matareyya",
-            "ain shams", "ezbet el-nakhl", "el-marg", "new el-marg"
-    ));
-    ArrayList<String> line2 = new ArrayList<>(Arrays.asList(
-            "el mounib", "sakiat mekki", "omm el misryeen", "giza", "faisal",
-            "cairo university", "bohooth", "dokki", "opera", "sadat", "naguib",
-            "ataba", "al shohadaa", "massara", "road el-farag", "sainte teresa",
-            "khalafawy", "mezallat", "koliet el-zeraa", "shobra el kheima"
-    ));
-    ArrayList<String> line3 = new ArrayList<>(Arrays.asList(
-            "adly mansour", "hikestep", "omar ibn al khattab", "kebaa", "hisham barakat",
-            "el nozha", "el shames club", "alf maskan", "heliopolis", "haroun",
-            "al ahram", "koleyet el banat", "cairo stadium", "fair zone", "abbassiya",
-            "abdou pasha", "el geish", "bab el shaaria", "ataba", "nasser",
-            "maspero", "zamalek", "kit kat", "sudan st.", "imbaba",
-            "el bohy", "el qawmia", "ring road", "rod el farag corr"
-    ));
-
-    ArrayList<String> line3new = new ArrayList<>(Arrays.asList(
-            "tawfikia", "wadi el nile", "gamet el dowel", "boulak el dakrour",
-            "cairo university"
-    ));
-
-    ArrayList<String> items = new ArrayList<>();
+    private Spinner startStationSpinner;
+    private Spinner endStationSpinner;
+    private TextView resultTextView;
+    private Button calculateButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        startSpinner = findViewById(R.id.startSpinner);
-        endSpinner = findViewById(R.id.endSpinner);
-        resultText = findViewById(R.id.resultText);
+        startStationSpinner = findViewById(R.id.startSpinner);
+        endStationSpinner = findViewById(R.id.endSpinner);
+        resultTextView = findViewById(R.id.resultText);
+        calculateButton = findViewById(R.id.submitButton);
 
-        items.add(0,"select station");
-        items.addAll(line1);
-        items.addAll(line2);
-        items.addAll(line3);
-        items.addAll(line3new);
+        allStations.addAll(line1);
+        allStations.addAll(line2);
+        allStations.addAll(line3);
+        allStations.addAll(line3new);
 
-        //items->adapter->spinner
-        ArrayAdapter startAdapter = new ArrayAdapter<>(this
-                , android.R.layout.simple_list_item_1, items);
-        startSpinner.setAdapter(startAdapter);
+        ArrayAdapter<String> startAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, allStations);
+        startAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        startStationSpinner.setAdapter(startAdapter);
 
-        ArrayAdapter endAdapter = new ArrayAdapter<>(this
-                , android.R.layout.simple_list_item_1, items);
-        endSpinner.setAdapter(endAdapter);
+        ArrayAdapter<String> endAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, allStations);
+        endAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        endStationSpinner.setAdapter(endAdapter);
 
-    }
+//        // Create ArrayAdapter using station_names array from strings.xml
+//        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
+//                this,
+//                R.array.station_names,
+//                android.R.layout.simple_spinner_item
+//        );
+//        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+//
+//        // Set adapters for spinners
+//        startStationSpinner.setAdapter(adapter);
+//        endStationSpinner.setAdapter(adapter);
 
-    public void submit(View view) {
+        calculateButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String startStation = startStationSpinner.getSelectedItem().toString().trim().toLowerCase();
+                String endStation = endStationSpinner.getSelectedItem().toString().trim().toLowerCase();
 
-        String start = startSpinner.getSelectedItem().toString();
-        String end = endSpinner.getSelectedItem().toString();
+                List<Integer> startLines = MetroAppFinal.findLines(startStation);
+                List<Integer> endLines = MetroAppFinal.findLines(endStation);
 
-        if (start.equalsIgnoreCase("select station") || end.equalsIgnoreCase("select station")) {
-            Toast.makeText(this, "please select station", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        if(end.equalsIgnoreCase(start)){
-            Toast.makeText(this, "please select end station", Toast.LENGTH_SHORT).show();
-            return;
-        }
+                if (!startLines.isEmpty() && !endLines.isEmpty() && !startStation.equals(endStation)) {
+                    // Perform the calculation
+                    int count = 0;
+                    StringBuilder result = new StringBuilder();
 
-        Intent a = new Intent(this, MetroLine.class);
-        a.putExtra("startStation",start);
-        a.putExtra("endStation",end);
-        startActivity(a);
+                    // Check if start and end stations are on the same physical line
+                    Set<Integer> commonLines = new HashSet<>(startLines);
+                    commonLines.retainAll(endLines);
 
+                    if (!commonLines.isEmpty()) {
+                        int commonLine = commonLines.iterator().next();
+                        MetroAppFinal.getDirection();
+                        result.append("Take Line ").append(commonLine)
+                                .append(" from ").append(startStation.toUpperCase())
+                                .append(" to ").append(endStation.toUpperCase()).append("\n");
+                        result.append(MetroAppFinal.printStations(startStation, endStation, commonLine));
+                        count = MetroAppFinal.routeStations.size();
+                    } else {
+                        int startLine = startLines.get(0);
+                        int endLine = endLines.get(0);
+                        ArrayList<String> startLineName = MetroAppFinal.getLineName(startLine);
 
-//        resultText.setText(start +"\n"+end);
-    }
+                        String interchangeStation = MetroAppFinal.getInterchangeStation(startLine, endLine, startStation, startLineName);
 
-    int calculateEstimatedTime(int count) {
-        return (count * 2);
-    }
+                        MetroAppFinal.getDirection();
+                        result.append("Take Line ").append(startLine)
+                                .append(" from -").append(startStation.toUpperCase())
+                                .append("- to -").append(interchangeStation.toUpperCase()).append("- :\n");
+                        result.append(MetroAppFinal.printStations(startStation, interchangeStation, startLine));
+                        result.append("\nChange to Line ").append(endLine)
+                                .append(" and from -").append(interchangeStation.toUpperCase())
+                                .append("- to -").append(endStation.toUpperCase()).append("- :\n");
+                        MetroAppFinal.printStations(interchangeStation, endStation, endLine);
+                        count = MetroAppFinal.routeStations.size() - 1;
+                    }
 
-    public int getPrice(int numberOfStations) {
-        if (numberOfStations <= 9) {
-            return 6;
-        } else if (numberOfStations <= 16) {
-            return 8;
-        } else if (numberOfStations <= 23) {
-            return 12;
-        } else {
-            return 15;
-        }
-    }
+                    result.append("\nNumber Of Stations: ").append(count);
+                    int price = MetroAppFinal.getPrice(count);
+                    result.append("\nPrice: ").append(price).append(" EGP");
+                    result.append("\nEstimated Time: ").append(count * 2).append(" minutes.");
 
-    public ArrayList<String> getLineName(int line) {
-        switch (line) {
-            case 1:
-                return line1;
-            case 2:
-                return line2;
-            case 3:
-                return line3;
-            case 4:
-                return line3new;
-            default:
-                return null;
-        }
+                    resultTextView.setText(result.toString());
+                } else {
+                    resultTextView.setText("Please enter valid stations.");
+                }
+            }
+        });
     }
 }

@@ -32,6 +32,8 @@ public class MetroAppFinal {
             "tawfikia", "wadi el nile", "gamet el dowel", "boulak el dakrour",
             "cairo university"
     ));
+    public static ArrayList<String> allStations = new ArrayList<>();
+
     static String direction1 = "El-Marg";
     static String direction2 = "Shobra";
     static String direction3 = "Rod El-Farag Corr.";
@@ -263,28 +265,30 @@ public class MetroAppFinal {
         }
     }
 
-    public static void printStations(String start, String end, int line) {
+    public static String printStations(String start, String end, int line) {
         ArrayList<String> lineStations = getLineName(line);
         int startIndex = lineStations.indexOf(start);
         int endIndex = lineStations.indexOf(end);
+        StringBuilder routeString = new StringBuilder();
 
         if (startIndex <= endIndex) {
             for (int i = startIndex; i <= endIndex; i++) {
-                System.out.print(lineStations.get(i));
+                routeString.append(lineStations.get(i));
                 routeStations.add(lineStations.get(i));
                 if (i < endIndex) {
-                    System.out.print(" -> ");
+                    routeString.append(" -> ");
                 }
             }
         } else {
             for (int i = startIndex; i >= endIndex; i--) {
-                System.out.print(lineStations.get(i));
+                routeString.append(lineStations.get(i));
                 routeStations.add(lineStations.get(i));
                 if (i > endIndex) {
-                    System.out.print(" -> ");
+                    routeString.append(" -> ");
                 }
             }
         }
+        return routeString.toString();
     }
 
     public static List<String> getNeighbors(String station) {
