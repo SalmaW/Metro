@@ -2,6 +2,7 @@ package com.example.metro;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -83,8 +84,13 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
 
+        Intent a = new Intent(this, MetroLine.class);
+        a.putExtra("startStation",start);
+        a.putExtra("endStation",end);
+        startActivity(a);
 
-        resultText.setText(start +"\n"+end);
+
+//        resultText.setText(start +"\n"+end);
     }
 
     int calculateEstimatedTime(int count) {
