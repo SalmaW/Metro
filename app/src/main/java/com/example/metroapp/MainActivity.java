@@ -183,8 +183,7 @@ public class MainActivity extends AppCompatActivity {
             }
             firstCount += routeStations.size();
             routeStations.clear();
-            resultText.append("\n");
-            resultText.append("\n**Change to Line " + endLine + " and from -" + interchangeStation.toUpperCase() + "- to -" + endStationAnswer.toUpperCase() + "- :");
+            resultText.append("\n\n**Change to Line " + endLine + " and from -" + interchangeStation.toUpperCase() + "- to -" + endStationAnswer.toUpperCase() + "- :");
             if (startStationAnswer.equalsIgnoreCase("cairo university") && !line2.contains(startStationAnswer)) {
                 interchangeStation = "nasser";
                 if (!connectWithLine3(interchangeStation, endStationAnswer)) {
