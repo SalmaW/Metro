@@ -4,71 +4,156 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:backgroundTint="#FFFFFF"
     tools:context=".MainActivity">
 
     <TextView
-        android:id="@+id/textView"
+        android:id="@+id/startStationText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="88dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
         android:text="Start Station"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.153"
+        android:textColor="#3F51B5"
+        android:textSize="20sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
-        android:id="@+id/textView2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="60dp"
-        android:text="End Station"
-        app:layout_constraintEnd_toEndOf="@+id/textView"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="@+id/textView"
-        app:layout_constraintTop_toBottomOf="@+id/startSpinner" />
+    <!--    <RadioGroup-->
+    <!--        android:id="@+id/radioGroupStart"-->
+    <!--        android:layout_width="wrap_content"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        android:layout_marginTop="16dp"-->
+    <!--        android:orientation="horizontal"-->
+    <!--        app:layout_constraintEnd_toEndOf="parent"-->
+    <!--        app:layout_constraintStart_toStartOf="parent"-->
+    <!--        app:layout_constraintTop_toBottomOf="@+id/startStationText">-->
 
-    <TextView
-        android:id="@+id/resultText"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginStart="18dp"
-        android:layout_marginTop="36dp"
-        android:layout_marginEnd="18dp"
-        app:layout_constraintBottom_toBottomOf="parent"
+    <!--        <RadioButton-->
+    <!--            android:id="@+id/line1RadioButton"-->
+    <!--            android:layout_width="wrap_content"-->
+    <!--            android:layout_height="wrap_content"-->
+    <!--            android:text="Line 1"-->
+    <!--            tools:layout_editor_absoluteX="137dp"-->
+    <!--            tools:layout_editor_absoluteY="60dp" />-->
+
+    <!--        <RadioButton-->
+    <!--            android:id="@+id/line2RadioButton"-->
+    <!--            android:layout_width="wrap_content"-->
+    <!--            android:layout_height="wrap_content"-->
+    <!--            android:text="Line 2"-->
+    <!--            tools:layout_editor_absoluteX="137dp"-->
+    <!--            tools:layout_editor_absoluteY="60dp" />-->
+
+    <!--        <RadioButton-->
+    <!--            android:id="@+id/line3RadioButton"-->
+    <!--            android:layout_width="wrap_content"-->
+    <!--            android:layout_height="wrap_content"-->
+    <!--            android:text="Line 3"-->
+    <!--            tools:layout_editor_absoluteX="137dp"-->
+    <!--            tools:layout_editor_absoluteY="60dp" />-->
+    <!--    </RadioGroup>-->
+
+    <Spinner
+        android:id="@+id/spinnerStart"
+        android:layout_width="match_parent"
+        android:layout_height="23dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/submitButton"
-        tools:text="result" />
+        app:layout_constraintTop_toBottomOf="@+id/startStationText" />
+
+
+    <TextView
+        android:id="@+id/endStationText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:text="Arrival Station"
+        android:textColor="#3F51B5"
+        android:textSize="20sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/spinnerStart" />
+
+    <!--    <RadioGroup-->
+    <!--        android:id="@+id/radioGroupEnd"-->
+    <!--        android:layout_width="wrap_content"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        android:layout_marginTop="16dp"-->
+    <!--        android:orientation="horizontal"-->
+    <!--        app:layout_constraintEnd_toEndOf="parent"-->
+    <!--        app:layout_constraintStart_toStartOf="parent"-->
+    <!--        app:layout_constraintTop_toBottomOf="@+id/endStationText">-->
+
+    <!--        <RadioButton-->
+    <!--            android:id="@+id/line1RadioButtonEnd"-->
+    <!--            android:layout_width="wrap_content"-->
+    <!--            android:layout_height="wrap_content"-->
+    <!--            android:text="Line 1"-->
+    <!--            tools:layout_editor_absoluteX="137dp"-->
+    <!--            tools:layout_editor_absoluteY="60dp" />-->
+
+    <!--        <RadioButton-->
+    <!--            android:id="@+id/line2RadioButtonEnd"-->
+    <!--            android:layout_width="wrap_content"-->
+    <!--            android:layout_height="wrap_content"-->
+    <!--            android:text="Line 2"-->
+    <!--            tools:layout_editor_absoluteX="137dp"-->
+    <!--            tools:layout_editor_absoluteY="60dp" />-->
+
+    <!--        <RadioButton-->
+    <!--            android:id="@+id/line3RadioButtonEnd"-->
+    <!--            android:layout_width="wrap_content"-->
+    <!--            android:layout_height="wrap_content"-->
+    <!--            android:text="Line 3"-->
+    <!--            tools:layout_editor_absoluteX="137dp"-->
+    <!--            tools:layout_editor_absoluteY="60dp" />-->
+    <!--    </RadioGroup>-->
+
+    <Spinner
+        android:id="@+id/spinnerEnd"
+        android:layout_width="match_parent"
+        android:layout_height="23dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/endStationText" />
 
     <Button
-        android:id="@+id/submitButton"
+        android:id="@+id/submit"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="56dp"
+        android:layout_marginTop="16dp"
+        android:backgroundTint="#3F51B5"
         android:onClick="submit"
         android:text="Submit"
-        app:layout_constraintEnd_toEndOf="@+id/endSpinner"
-        app:layout_constraintHorizontal_bias="0.497"
-        app:layout_constraintStart_toStartOf="@+id/endSpinner"
-        app:layout_constraintTop_toBottomOf="@+id/endSpinner" />
-
-    <Spinner
-        android:id="@+id/startSpinner"
-        android:layout_width="309dp"
-        android:layout_height="30dp"
-        android:layout_marginTop="24dp"
+        android:textColorLink="#3F51B5"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView" />
+        app:layout_constraintTop_toBottomOf="@+id/spinnerEnd" />
 
-    <Spinner
-        android:id="@+id/endSpinner"
-        android:layout_width="306dp"
-        android:layout_height="33dp"
-        android:layout_marginTop="28dp"
-        app:layout_constraintEnd_toEndOf="@+id/startSpinner"
-        app:layout_constraintHorizontal_bias="0.6"
-        app:layout_constraintStart_toStartOf="@+id/startSpinner"
-        app:layout_constraintTop_toBottomOf="@+id/textView2" />
+    <ScrollView
+        android:id="@+id/scrollView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/submit">
+
+        <TextView
+            android:id="@+id/resultText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="16dp"
+            android:textColor="@color/black"
+            android:textSize="14dp"
+            tools:text="@tools:sample/lorem/random" />
+    </ScrollView>
+
+
 </androidx.constraintlayout.widget.ConstraintLayout>
