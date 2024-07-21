@@ -1,15 +1,19 @@
 package com.example.metroapp;
 
+import static com.example.metroapp.Constants.line1;
+import static com.example.metroapp.Constants.line2;
+import static com.example.metroapp.Constants.line3;
+import static com.example.metroapp.Constants.line3new;
+
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.text.method.ScrollingMovementMethod;
+import android.speech.tts.TextToSpeech;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.RadioButton;
-import android.widget.RadioGroup;
 import android.widget.ScrollView;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -23,96 +27,47 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements TextToSpeech.OnInitListener {
 
-    //    RadioGroup startRadioGroup, endRadioGroup;
     Spinner startStationsSpinner, endStationsSpinner;
-    Button submitButton;
-    TextView resultText;
+    Button submitButton, soundButton;
+    TextView resultText, clear;
     ScrollView scrollView;
 
-    public ArrayList<String> routeStations = new ArrayList<>();
-    ArrayList<String> line1 = new ArrayList<>(Arrays.asList(
-            "Select station",
-            "helwan", "ain helwan", "helwan university", "wadi hof", "hadayek helwan",
-            "el-maasara", "tora el-asmant", "kozzika", "tora el-balad", "sakanat el-maadi", "el-maadi",
-            "hadayek el-maadi", "dar el-salam", "el-zahraa", "mar girgis", "el-malek el-saleh",
-            "al-sayeda zeinab", "saad zaghloul", "sadat", "nasser", "orabi", "al shohadaa",
-            "ghamra", "el-demerdash", "manshiet el-sadr", "kobri el-qobba", "hammamat el-qobba",
-            "saray el-qobba", "hadayek el-zaitoun", "helmeyet el-zaitoun", "el-matareyya",
-            "ain shams", "ezbet el-nakhl", "el-marg", "new el-marg"
-    ));
-    ArrayList<String> line2 = new ArrayList<>(Arrays.asList(
-            "el mounib", "sakiat mekki", "omm el misryeen", "giza", "faisal",
-            "cairo university", "bohooth", "dokki", "opera", "sadat", "naguib",
-            "ataba", "al shohadaa", "massara", "road el-farag", "sainte teresa",
-            "khalafawy", "mezallat", "koliet el-zeraa", "shobra el kheima"
-    ));
-    ArrayList<String> line3 = new ArrayList<>(Arrays.asList(
-            "adly mansour", "hikestep", "omar ibn al khattab", "kebaa", "hisham barakat",
-            "el nozha", "el shames club", "alf maskan", "heliopolis", "haroun",
-            "al ahram", "koleyet el banat", "cairo stadium", "fair zone", "abbassiya",
-            "abdou pasha", "el geish", "bab el shaaria", "ataba", "nasser",
-            "maspero", "zamalek", "kit kat", "sudan st.", "imbaba",
-            "el bohy", "el qawmia", "ring road", "rod el farag corr"
-    ));
+    TextToSpeech tts;
 
-    ArrayList<String> line3new = new ArrayList<>(Arrays.asList(
-            "tawfikia", "wadi el nile", "gamet el dowel", "boulak el dakrour",
-            "cairo university"
-    ));
+    public ArrayList<String> routeStations = new ArrayList<>();
+
     String startDirection = "";
     String endDirection = "";
     byte counter = 0;
+    int firstCount = 0;
+    String interchangeStation = "";
+    MetroPathFinder mpf;
+    MetroDirectionFinder mdf;
+    SharedPreferences pref;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        clear = findViewById(R.id.clear);
         submitButton = findViewById(R.id.submit);
-//        startRadioGroup = findViewById(R.id.radioGroupStart);
-//        endRadioGroup = findViewById(R.id.radioGroupEnd);
+        soundButton = findViewById(R.id.sound);
         startStationsSpinner = findViewById(R.id.spinnerStart);
         endStationsSpinner = findViewById(R.id.spinnerEnd);
         resultText = findViewById(R.id.resultText);
         scrollView = findViewById(R.id.scrollView);
+        tts=new TextToSpeech(this,this);
 
         fillSpinner(startStationsSpinner);
         fillSpinner(endStationsSpinner);
-//        checkLine(startRadioGroup, startStationsSpinner);
-//        checkLine(endRadioGroup, endStationsSpinner);
-    }
 
-    private void checkLine(RadioGroup radioGroup, Spinner spinner) {
-        // Uncheck or reset the radio buttons initially
-        radioGroup.clearCheck();
 
-        // Add the Listener to the RadioGroup
-        // The flow will come here when
-        // any of the radio buttons in the radioGroup
-        // has been clicked
-        // Check which radio button has been clicked
-        radioGroup.setOnCheckedChangeListener(
-                (group, checkedId) -> {
-                    // Get the selected Radio Button
-                    RadioButton radioButton = group.findViewById(checkedId);
-
-                    fillSpinner(spinner);
-
-                });
     }
 
     public void submit(View view) {
-//        int startSelectedId = startRadioGroup.getCheckedRadioButtonId();
-//        int endSelectedId = endRadioGroup.getCheckedRadioButtonId();
-//        if (startSelectedId == -1 || endSelectedId == -1) {
-//            Toast.makeText(this,
-//                            "Please select line",
-//                            Toast.LENGTH_SHORT)
-//                    .show();
-//            return;
-//        }
 
         String startStationAnswer = startStationsSpinner.getSelectedItem().toString();
         String endStationAnswer = endStationsSpinner.getSelectedItem().toString();
@@ -126,7 +81,10 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
         getAllData(startStationAnswer, endStationAnswer);
-//        resultText.setMovementMethod(new ScrollingMovementMethod());
+
+        if (!interchangeStation.equals("")) {
+            soundButton.setEnabled(true);
+        }
 
         // Scroll to the top of the ScrollView
         scrollView.post(() -> scrollView.fullScroll(ScrollView.FOCUS_UP));
@@ -134,14 +92,29 @@ public class MainActivity extends AppCompatActivity {
         counter = 0;
         firstCount = 0;
         routeStations.clear();
-
-        Toast.makeText(this, "Submitted", Toast.LENGTH_SHORT).show();
     }
 
-    int firstCount = 0;
+    @Override
+    protected void onStop() {
+
+        tts.stop();
+        tts.shutdown();
+
+        if (!resultText.getText().toString().isEmpty()){
+            SharedPreferences.Editor editor = pref.edit();
+//            editor.putString("allData", resultText.getText().toString());
+            editor.putString("startSpinnerSelected", startStationsSpinner.getSelectedItem().toString());
+            editor.putString("endSpinnerSelected", endStationsSpinner.getSelectedItem().toString());
+            editor.apply();
+        }
+        super.onStop();
+    }
 
     void getAllData(String startStationAnswer, String endStationAnswer) {
-        getDirection(startStationAnswer, endStationAnswer);
+        mdf = new MetroDirectionFinder();
+        startDirection = mdf.getDirection(startStationAnswer, endStationAnswer)[0];
+        endDirection = mdf.getDirection(startStationAnswer, endStationAnswer)[1];
+
         if (!endDirection.equals(""))
             resultText.setText("Start Direction: " + startDirection + ", End Direction: " + endDirection);
         else
@@ -159,9 +132,7 @@ public class MainActivity extends AppCompatActivity {
         if (!commonLines.isEmpty()) {
             int commonLine = commonLines.iterator().next();
             resultText.append("\nTake Line " + commonLine + " from " + startStationAnswer.toUpperCase() + " to " + endStationAnswer.toUpperCase());
-            if (startStationAnswer.equalsIgnoreCase("cairo university") && line2.contains(endStationAnswer)) {
-                printStations(startStationAnswer, endStationAnswer, commonLine);
-            } else if (!connectWithLine3(startStationAnswer, endStationAnswer)) {
+             if (connectWithLine3(startStationAnswer, endStationAnswer)) {
                 printStations(startStationAnswer, endStationAnswer, commonLine);
             }
         } else {
@@ -169,29 +140,39 @@ public class MainActivity extends AppCompatActivity {
             int endLine = endLines.get(0);
             ArrayList<String> startLineName = getLineName(startLine);
 
-            String interchangeStation = getInterchangeStation(startLine, endLine, startStationAnswer, startLineName);
+            interchangeStation = getInterchangeStation(startLine, endLine, startStationAnswer, startLineName);
 
             resultText.append("\n**Take Line " + startLine + " from -" + startStationAnswer.toUpperCase() + "- to -" + interchangeStation.toUpperCase() + "- :");
             Log.i("interchangeStation", interchangeStation);
-            if (startStationAnswer.equalsIgnoreCase("cairo university") && !line2.contains(startStationAnswer)) {
-                interchangeStation = "nasser";
-                if (!connectWithLine3(startStationAnswer, interchangeStation)) {
+
+                if (connectWithLine3(startStationAnswer, interchangeStation)) {
                     printStations(startStationAnswer, interchangeStation, startLine);
                 }
-            } else {
-                printStations(startStationAnswer, interchangeStation, startLine);
-            }
+
             firstCount += routeStations.size();
             routeStations.clear();
+            if (endLine == 4)
+                endLine = 3;
             resultText.append("\n\n**Change to Line " + endLine + " and from -" + interchangeStation.toUpperCase() + "- to -" + endStationAnswer.toUpperCase() + "- :");
-            if (startStationAnswer.equalsIgnoreCase("cairo university") && !line2.contains(startStationAnswer)) {
+            if (endStationsSpinner.toString().equalsIgnoreCase("cairo university")) {
+                getStations(interchangeStation, endStationAnswer, endLine);
+                int size = routeStations.size();
+                routeStations.clear();
                 interchangeStation = "nasser";
-                if (!connectWithLine3(interchangeStation, endStationAnswer)) {
+                if (connectWithLine3(interchangeStation, endStationAnswer)) {
+                    getStations(interchangeStation, endStationAnswer, endLine);
+                }
+                if (size < routeStations.size()){
+                    routeStations.clear();
+                    interchangeStation = getInterchangeStation(startLine, endLine, startStationAnswer, startLineName);
                     printStations(interchangeStation, endStationAnswer, endLine);
                 }
-            } else {
-                printStations(interchangeStation, endStationAnswer, endLine);
+            }else {
+                if (connectWithLine3(interchangeStation, endStationAnswer)) {
+                    printStations(interchangeStation, endStationAnswer, endLine);
+                }
             }
+
         }
 
         resultText.append("\n");
@@ -220,40 +201,44 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void fillSpinner(Spinner spinner) {
-//        int selectedId = radioGroup.getCheckedRadioButtonId();
-//        RadioButton radioButton = radioGroup.findViewById(selectedId);
         ArrayList<String> items = new ArrayList<>();
-
-//        if (radioButton.getText().toString().equals("Line 1")){
-//                items.clear();
+        items.add(0, "Select station");
         items.addAll(line1);
         items.addAll(line2);
         items.addAll(line3);
         items.addAll(line3new);
-//            }
-//        else if(radioButton.getText().toString().equals("Line 2")) {
-//                items.clear();
-//                items.addAll(line2);
-//            }
-//        else if(radioButton.getText().toString().equals("Line 3")) {
-//                items.clear();
-//                items.addAll(line3);
-//                items.addAll(line3new);
-//            }
 
         //items->adapter->spinner
         ArrayAdapter adapter = new ArrayAdapter(this
                 , android.R.layout.simple_list_item_1, items);
         spinner.setAdapter(adapter);
 
+        pref = getSharedPreferences("data",MODE_PRIVATE);
+//        String data = pref.getString("allData","");
+        String startSpinnerSelected = pref.getString("startSpinnerSelected","");
+        String endSpinnerSelected = pref.getString("endSpinnerSelected","");
+        if (!startSpinnerSelected.isEmpty() && !endSpinnerSelected.isEmpty()) {
+            startStationsSpinner.setSelection(adapter.getPosition(startSpinnerSelected));
+            endStationsSpinner.setSelection(adapter.getPosition(endSpinnerSelected));
+        }
+
     }
 
     void getAllPaths(String startStation, String endStation) {
-        List<List<String>> allPaths = findAllPaths(startStation, endStation);
+        mpf = new MetroPathFinder();
+        List<List<String>> allPaths = mpf.findAllPaths(startStation, endStation);
         resultText.append("\n\nAll possible paths from " + startStation.toUpperCase() + " to " + endStation.toUpperCase() + ":");
         int min = allPaths.get(0).size();
         int shortIndex = 0;
         for (List<String> path : allPaths) {
+            if (path.contains("kit kat")&&path.contains("cairo university")){
+                if ((path.contains("tawfikia")&&path.contains("wadi el nile")&&path.contains("gamet el dowel")
+                &&path.contains("boulak el dakrour")&&path.contains("cairo university"))){
+                    resultText.append("\n\n##" + path);
+                }
+            }else if (!path.contains("kit kat")&&!path.contains("cairo university")){
+                resultText.append("\n\n##" + path);
+            }
 //            count = path.size();
             if (path.size() < min) {
                 min = path.size();
@@ -267,20 +252,23 @@ public class MainActivity extends AppCompatActivity {
 
     public List<Integer> findLines(String station) {
         List<Integer> lines = new ArrayList<>();
-        if (line1.contains(station)) {
+        if (Constants.line1.contains(station)) {
             lines.add(1);
         }
         if (line2.contains(station)) {
             lines.add(2);
         }
-        if (line3.contains(station) || line3new.contains(station)) {
+        if (line3.contains(station)) {
             lines.add(3);
+        }
+        if (line3new.contains(station)) {
+            lines.add(4);
         }
         return lines;  // Return all lines containing the station
     }
 
     public String shortestPath(int startLine, int endLine, String startStation, ArrayList<String> startLineName) {
-        String interchangeStation = "sadat";
+        String interchangeStation = "";
 
         if ((startLine == 1 && endLine == 2) || (startLine == 2 && endLine == 1)) {
             int startStationIndex = startLineName.indexOf(startStation);
@@ -293,6 +281,24 @@ public class MainActivity extends AppCompatActivity {
             if (interchangeStation1 < interchangeStation2) {
                 interchangeStation = "al shohadaa";
             }
+            else {
+                interchangeStation = "sadat";
+            }
+        }
+
+        if ((startLine == 2 && (endLine == 3||endLine == 4)) || ((startLine == 3||startLine == 4) && endLine == 2)) {
+            int startStationIndex = startLineName.indexOf(startStation);
+            int atabaIndex = startLineName.indexOf("ataba");
+
+            int interchangeStation1 = Math.abs(startStationIndex - atabaIndex);
+            int cuIndex = startLineName.indexOf("cairo university");
+            int interchangeStation2 = Math.abs(startStationIndex - cuIndex);
+
+            if (interchangeStation1 < interchangeStation2) {
+                interchangeStation = "ataba";
+            }else {
+                interchangeStation = "cairo university";
+            }
         }
         return interchangeStation;
     }
@@ -302,8 +308,8 @@ public class MainActivity extends AppCompatActivity {
         String interchangeStations = "";
         if ((startLine == 1 || endLine == 1) && (startLine == 2 || endLine == 2)) {
             interchangeStations = shortestPath(startLine, endLine, startStation, startLineName);//1&2
-        } else if ((startLine == 2 || endLine == 2) && (startLine == 3 || endLine == 3)) {
-            interchangeStations = "ataba";//2&3
+        } else if ((startLine == 2 || endLine == 2) && ((startLine == 3 || endLine == 3)||((startLine == 4 || endLine == 4)))) {
+            interchangeStations = shortestPath(startLine, endLine, startStation, startLineName);//2&3
         } else if ((startLine == 1 || endLine == 1) && (startLine == 3 || endLine == 3)) {
             interchangeStations = "nasser";//1&3
         }
@@ -330,13 +336,26 @@ public class MainActivity extends AppCompatActivity {
         String kitKatStation = "kit kat";
         String tawfikiaStation = "tawfikia";
 
+        if (startStation.equalsIgnoreCase("cairo university") && (!line3new.contains(endStation) && !line3.contains(endStation))) {
+            return true;
+        }
+        if (endStation.equalsIgnoreCase("cairo university") && (!line3new.contains(startStation) && !line3.contains(startStation))) {
+            return true;
+        }
+
+        if (line3new.contains(startStation) && line3new.contains(endStation)){
+            startDirection = "Adly Mansour";
+            printStations(startStation, endStation, 4);
+            return false;
+        }
+
         if (line3new.contains(endStation)) {
             printStations(startStation, kitKatStation, 3);
             firstCount += routeStations.size();
             routeStations.clear();
             resultText.append(" -> ");
             printStations(tawfikiaStation, endStation, 4);
-            return true;
+            return false;
         }
         if (line3new.contains(startStation)) {
             printStations(startStation, tawfikiaStation, 4);
@@ -344,91 +363,13 @@ public class MainActivity extends AppCompatActivity {
             routeStations.clear();
             resultText.append(" -> ");
             printStations(kitKatStation, endStation, 3);
-            return true;
+            return false;
         }
 
-        return false;
+        return true;
     }
 
-    void getDirection(String startStationAnswer, String endStationAnswer) {
 
-        boolean line1Start = line1.contains(startStationAnswer);
-        boolean line1End = line1.contains(endStationAnswer);
-        boolean line2Start = line2.contains(startStationAnswer);
-        boolean line2End = line2.contains(endStationAnswer);
-        boolean line3Start = line3.contains(startStationAnswer);
-        boolean line3End = line3.contains(endStationAnswer);
-
-        if (line1Start && line1End) {
-            startDirection = getLine1Direction(startStationAnswer, endStationAnswer);
-            endDirection = "";
-        } else if (line2Start && line2End) {
-            startDirection = getLine2Direction(startStationAnswer, endStationAnswer);
-            endDirection = "";
-        } else if ((line3Start || line3new.contains(startStationAnswer)) && (line3End || line3new.contains(endStationAnswer))) {
-            startDirection = getLine3Direction(startStationAnswer, endStationAnswer);
-            endDirection = "";
-        } else if (line1Start && line2End) {
-            startDirection = getLine1Direction(startStationAnswer, "al shohadaa");
-            endDirection = getLine2Direction("al shohadaa", endStationAnswer);
-
-        } else if (line2Start && line1End) {
-            startDirection = getLine2Direction(startStationAnswer, "al shohadaa");
-            endDirection = getLine1Direction("al shohadaa", endStationAnswer);
-
-        } else if (line1Start && (line3End || line3new.contains(endStationAnswer))) {
-            startDirection = getLine1Direction(startStationAnswer, "sadat");
-            endDirection = getLine3Direction("nasser", endStationAnswer);
-
-        } else if ((line3Start || line3new.contains(startStationAnswer)) && line1End) {
-            startDirection = getLine3Direction(startStationAnswer, "nasser");
-            endDirection = getLine1Direction("nasser", endStationAnswer);
-
-        } else if (line2Start && (line3End || line3new.contains(endStationAnswer))) {
-            startDirection = getLine2Direction(startStationAnswer, "ataba");
-            endDirection = getLine3Direction("ataba", endStationAnswer);
-
-        } else if ((line3Start || line3new.contains(startStationAnswer)) && line2End) {
-            startDirection = getLine3Direction(startStationAnswer, "ataba");
-            endDirection = getLine2Direction("ataba", endStationAnswer);
-        }
-    }
-
-    String getLine1Direction(String startStation, String endStation) {
-        if (line1.indexOf(startStation) > line1.indexOf(endStation)) {
-            return "Helwan";
-        } else {
-            return "El-Marg";
-        }
-    }
-
-    String getLine2Direction(String startStation, String endStation) {
-        if (line2.indexOf(startStation) > line2.indexOf(endStation)) {
-            return "El-Mounib";
-        } else {
-            return "Shobra";
-        }
-    }
-
-    String getLine3Direction(String startStation, String endStation) {
-        if ((line3.contains(startStation) && line3.contains(endStation))) {
-            if (line3.indexOf(startStation) > line3.indexOf(endStation)) {
-                return "Adly Mansour";
-            } else {
-                return "Rod El-Farag Corr.";
-            }
-        } else if ((line3new.contains(startStation) || line3.contains(startStation)) &&
-                (line3new.contains(endStation) || line3.contains(endStation))) {
-            if (line3new.contains(endStation)) {
-                return "Cairo University";
-            } else if (line3new.contains(startStation) && (line3.indexOf("kit kat") > line3.indexOf(endStation))) {
-                return "Adly Mansour";
-            } else {
-                return "Rod El-Farag Corr.";
-            }
-        }
-        return "";
-    }
 
     String calculateEstimatedTime(int count) {
         byte arrivalTime = (byte) (count * 2);
@@ -471,79 +412,102 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public List<String> getNeighbors(String station) {
-        List<String> neighbors = new ArrayList<>();
+//    public List<String> getNeighbors(String station) {
+//        List<String> neighbors = new ArrayList<>();
+//
+//        // Check neighbors on line 1
+//        if (line1.contains(station)) {
+//            int index = line1.indexOf(station);
+//            if (index > 0) {
+//                neighbors.add(line1.get(index - 1));
+//            }
+//            if (index < line1.size() - 1) {
+//                neighbors.add(line1.get(index + 1));
+//            }
+//        }
+//
+//        // Check neighbors on line 2
+//        if (line2.contains(station)) {
+//            int index = line2.indexOf(station);
+//            if (index > 0) {
+//                neighbors.add(line2.get(index - 1));
+//            }
+//            if (index < line2.size() - 1) {
+//                neighbors.add(line2.get(index + 1));
+//            }
+//        }
+//
+//        // Check neighbors on line 3
+//        if (line3.contains(station)) {
+//            int index = line3.indexOf(station);
+//            if (index > 0) {
+//                neighbors.add(line3.get(index - 1));
+//            }
+//            if (index < line3.size() - 1) {
+//                neighbors.add(line3.get(index + 1));
+//            }
+//
+//            // Check if this station is "kit kat" to add neighbors from line3new
+//            if (station.equals("kit kat")) {
+//                neighbors.addAll(line3new); // Add all stations from line3new as neighbors
+//            }
+//        }
+//
+//
+//        // Check neighbors on line 3new
+//        if (line3new.contains(station)) {
+//            int index = line3new.indexOf(station);
+//            Log.i("index", index+"");
+//            if (index > 0) {
+//                neighbors.add(line3new.get(index - 1));
+//            }
+//            if (index < line3new.size() - 1) {
+//                neighbors.add(line3new.get(index + 1));
+//            }
+//        }
+//
+//        return neighbors;
+//    }
 
-        // Check neighbors on line 1
-        if (line1.contains(station)) {
-            int index = line1.indexOf(station);
-            if (index > 0) {
-                neighbors.add(line1.get(index - 1));
-            }
-            if (index < line1.size() - 1) {
-                neighbors.add(line1.get(index + 1));
-            }
-        }
 
-        // Check neighbors on line 2
-        if (line2.contains(station)) {
-            int index = line2.indexOf(station);
-            if (index > 0) {
-                neighbors.add(line2.get(index - 1));
-            }
-            if (index < line2.size() - 1) {
-                neighbors.add(line2.get(index + 1));
-            }
-        }
+    // Helper method to get neighbors from line3New
+//    private List<String> getNeighborsFromLine3New(String station) {
+//        List<String> neighbors = new ArrayList<>();
+//
+//        int index = line3new.indexOf(station);
+//        if (index > 0) {
+//            neighbors.add(line3new.get(index - 1));
+//        }
+//        if (index < line3new.size() - 1) {
+//            neighbors.add(line3new.get(index + 1));
+//        }
+//
+//        return neighbors;
+//    }
 
-        // Check neighbors on line 3
-        if (line3.contains(station)) {
-            int index = line3.indexOf(station);
-            if (index > 0) {
-                neighbors.add(line3.get(index - 1));
-            }
-            if (index < line3.size() - 1) {
-                neighbors.add(line3.get(index + 1));
-            }
-        }
+    public void clear(View view) {
+        resultText.setText("");
+        startStationsSpinner.setSelection(0);
+        endStationsSpinner.setSelection(0);
 
-        // Check neighbors on line 3new
-        if (line3new.contains(station)) {
-            int index = line3new.indexOf(station);
-            if (index > 0) {
-                neighbors.add(line3new.get(index - 1));
-            }
-            if (index < line3new.size() - 1) {
-                neighbors.add(line3new.get(index + 1));
-            }
-        }
-
-        return neighbors;
+        SharedPreferences.Editor editor = pref.edit();
+//        editor.putString("allData", resultText.getText().toString());
+        editor.putString("startSpinnerSelected", startStationsSpinner.getSelectedItem().toString());
+        editor.putString("endSpinnerSelected", endStationsSpinner.getSelectedItem().toString());
+        editor.apply();
     }
 
-    public List<List<String>> findAllPaths(String start, String end) {
-        List<List<String>> paths = new ArrayList<>();
-        Deque<String> path = new ArrayDeque<>();
-        Set<String> visited = new HashSet<>();
-        findAllPathsDFS(start, end, visited, path, paths);
-        return paths;
+    @Override
+    public void onInit(int i) {
+
     }
 
-    private void findAllPathsDFS(String current, String end, Set<String> visited, Deque<String> path, List<List<String>> paths) {
-        visited.add(current);
-        path.addLast(current);
-
-        if (current.equals(end)) {
-            paths.add(new ArrayList<>(path));
-        } else {
-            for (String neighbor : getNeighbors(current)) {
-                if (!visited.contains(neighbor)) {
-                    findAllPathsDFS(neighbor, end, visited, path, paths);
-                }
-            }
-        }
-        path.removeLast();
-        visited.remove(current);
+    @Override
+    public void onPointerCaptureChanged(boolean hasCapture) {
+        super.onPointerCaptureChanged(hasCapture);
     }
 
+    public void sound(View view) {
+        tts.speak(interchangeStation,TextToSpeech.QUEUE_FLUSH,null,null);
+    }
 }

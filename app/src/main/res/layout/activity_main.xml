@@ -8,51 +8,29 @@
     tools:context=".MainActivity">
 
     <TextView
+        android:id="@+id/clear"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="6dp"
+        android:text="Clear"
+        android:textColor="#3F51B5"
+        android:textSize="16sp"
+        android:onClick="clear"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
         android:id="@+id/startStationText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="26dp"
         android:text="Start Station"
         android:textColor="#3F51B5"
         android:textSize="20sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
-
-    <!--    <RadioGroup-->
-    <!--        android:id="@+id/radioGroupStart"-->
-    <!--        android:layout_width="wrap_content"-->
-    <!--        android:layout_height="wrap_content"-->
-    <!--        android:layout_marginTop="16dp"-->
-    <!--        android:orientation="horizontal"-->
-    <!--        app:layout_constraintEnd_toEndOf="parent"-->
-    <!--        app:layout_constraintStart_toStartOf="parent"-->
-    <!--        app:layout_constraintTop_toBottomOf="@+id/startStationText">-->
-
-    <!--        <RadioButton-->
-    <!--            android:id="@+id/line1RadioButton"-->
-    <!--            android:layout_width="wrap_content"-->
-    <!--            android:layout_height="wrap_content"-->
-    <!--            android:text="Line 1"-->
-    <!--            tools:layout_editor_absoluteX="137dp"-->
-    <!--            tools:layout_editor_absoluteY="60dp" />-->
-
-    <!--        <RadioButton-->
-    <!--            android:id="@+id/line2RadioButton"-->
-    <!--            android:layout_width="wrap_content"-->
-    <!--            android:layout_height="wrap_content"-->
-    <!--            android:text="Line 2"-->
-    <!--            tools:layout_editor_absoluteX="137dp"-->
-    <!--            tools:layout_editor_absoluteY="60dp" />-->
-
-    <!--        <RadioButton-->
-    <!--            android:id="@+id/line3RadioButton"-->
-    <!--            android:layout_width="wrap_content"-->
-    <!--            android:layout_height="wrap_content"-->
-    <!--            android:text="Line 3"-->
-    <!--            tools:layout_editor_absoluteX="137dp"-->
-    <!--            tools:layout_editor_absoluteY="60dp" />-->
-    <!--    </RadioGroup>-->
 
     <Spinner
         android:id="@+id/spinnerStart"
@@ -78,41 +56,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/spinnerStart" />
 
-    <!--    <RadioGroup-->
-    <!--        android:id="@+id/radioGroupEnd"-->
-    <!--        android:layout_width="wrap_content"-->
-    <!--        android:layout_height="wrap_content"-->
-    <!--        android:layout_marginTop="16dp"-->
-    <!--        android:orientation="horizontal"-->
-    <!--        app:layout_constraintEnd_toEndOf="parent"-->
-    <!--        app:layout_constraintStart_toStartOf="parent"-->
-    <!--        app:layout_constraintTop_toBottomOf="@+id/endStationText">-->
-
-    <!--        <RadioButton-->
-    <!--            android:id="@+id/line1RadioButtonEnd"-->
-    <!--            android:layout_width="wrap_content"-->
-    <!--            android:layout_height="wrap_content"-->
-    <!--            android:text="Line 1"-->
-    <!--            tools:layout_editor_absoluteX="137dp"-->
-    <!--            tools:layout_editor_absoluteY="60dp" />-->
-
-    <!--        <RadioButton-->
-    <!--            android:id="@+id/line2RadioButtonEnd"-->
-    <!--            android:layout_width="wrap_content"-->
-    <!--            android:layout_height="wrap_content"-->
-    <!--            android:text="Line 2"-->
-    <!--            tools:layout_editor_absoluteX="137dp"-->
-    <!--            tools:layout_editor_absoluteY="60dp" />-->
-
-    <!--        <RadioButton-->
-    <!--            android:id="@+id/line3RadioButtonEnd"-->
-    <!--            android:layout_width="wrap_content"-->
-    <!--            android:layout_height="wrap_content"-->
-    <!--            android:text="Line 3"-->
-    <!--            tools:layout_editor_absoluteX="137dp"-->
-    <!--            tools:layout_editor_absoluteY="60dp" />-->
-    <!--    </RadioGroup>-->
-
     <Spinner
         android:id="@+id/spinnerEnd"
         android:layout_width="match_parent"
@@ -135,7 +78,20 @@
         android:textColorLink="#3F51B5"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/spinnerEnd" />
+        app:layout_constraintTop_toBottomOf="@+id/spinnerEnd"/>
+
+    <Button
+        android:id="@+id/sound"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:backgroundTint="#3F51B5"
+        android:enabled="false"
+        android:onClick="sound"
+        android:text="Listen to Transition Station"
+        android:textColorLink="#3F51B5"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/submit"/>
 
     <ScrollView
         android:id="@+id/scrollView"
@@ -143,7 +99,7 @@
         android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/submit">
+        app:layout_constraintTop_toBottomOf="@+id/sound">
 
         <TextView
             android:id="@+id/resultText"
@@ -151,7 +107,7 @@
             android:layout_height="wrap_content"
             android:padding="16dp"
             android:textColor="@color/black"
-            android:textSize="14dp"
+            android:textSize="16dp"
             tools:text="@tools:sample/lorem/random" />
     </ScrollView>
 
